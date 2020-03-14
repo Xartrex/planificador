@@ -18,7 +18,7 @@ void disk_interrupt(int sig);
 
 
 /* Array of state thread control blocks: the process allows a maximum of N threads */
-static TCB t_state[N]; 
+static TCB t_state[N];
 
 /* Current running thread */
 static TCB* running;
@@ -32,7 +32,7 @@ static TCB idle;
 
 static void idle_function()
 {
-  while(1);
+  while(1);//hay que rellenar
 }
 
 void function_thread(int sec)
@@ -138,6 +138,9 @@ int mythread_create (void (*fun_addr)(),int priority,int seconds)
   return i;
 } 
 /****** End my_thread_create() ******/
+
+//a rellenar todas estas funciones mozos
+//
 
 
 /* Read disk syscall */
