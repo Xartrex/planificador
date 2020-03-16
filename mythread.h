@@ -30,6 +30,7 @@ typedef struct tcb{
   int tid; /* thread id*/
   int priority; /* thread priority*/
   int ticks;
+  int rodaja;
   int execution_total_ticks; /*Thread time to complete execution*/
   int remaining_ticks; /*Remaining ticks to complete the process execution*/
   void (*function)(int);  /* the code of the thread */

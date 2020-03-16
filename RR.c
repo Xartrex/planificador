@@ -11,6 +11,7 @@
 
 #include "queue.h"
 
+struct queue *cola = queue_new();
 TCB* scheduler();
 void activator();
 void timer_interrupt(int sig);
@@ -135,6 +136,11 @@ int mythread_create (void (*fun_addr)(),int priority,int seconds)
   t_state[i].run_env.uc_stack.ss_flags = 0;
   makecontext(&t_state[i].run_env, fun_addr,2,seconds);
 
+  t_state[i].ticks= QUANTUM_TICKS;
+  disable_interrupt();
+  enqueue(cola, &t_state[i]);
+  enable_interrupt();
+  
   return i;
 } 
 /****** End my_thread_create() ******/
@@ -182,6 +188,9 @@ void mythread_setpriority(int priority)
 {
   int tid = mythread_gettid();	
   t_state[tid].priority = priority;
+  if(priority ==  HIGH_PRIORITY){
+    t_state[tid].remaining_ticks = 195;
+  }
 }
 
 /* Returns the priority of the calling thread */
@@ -203,32 +212,48 @@ int mythread_gettid(){
 
 TCB* scheduler()
 {
-  int i;
-  for(i=0; i<N; i++)
-  {
-    if (t_state[i].state == INIT) 
-    {
-      current = i;
-	    return &t_state[i];
-    }
+  if(queue_empty(cola)!=1){
+   disable_interrupt(), 
+   TCB* next = dequeue(cola);
+   enable_interrupt();
+   return next;
   }
-  printf("mythread_free: No thread in the system\nExiting...\n");	
-  exit(1);
+  else{
+    printf("mythread_free: No hay threads");
+    exit(1);
+  }
 }
 
 
 /* Timer interrupt */
 void timer_interrupt(int sig)
 {
-  
+  running.ticks--;
+  if(running.ticks==0){
+      //running.state=waiting;
+      running.ticks=QUANTUM_TICKS;
+      disable_interrupt();
+      enqueue(cola, running);
+      enable_interrupt();     
+      TCB* oldrunning = running; 
+      running = scheduler();
+      //running.state=init;
+      activator(running, oldrunning);
 
+     
+      running.state = FREE;
+  }
 } 
 
 /* Activator */
-void activator(TCB* next)
+void activator(TCB* next, TCB* old)
 {
-  setcontext (&(next->run_env));
-  printf("mythread_free: After setcontext, should never get here!!...\n");	
+  if(old.state==FREE) setcontext(&(next->run_env));
+  else{
+    swapcontext()
+  }
+  //setcontext (&(next->run_env));
+  //printf("mythread_free: After setcontext, should never get here!!...\n");	
 }
 
 

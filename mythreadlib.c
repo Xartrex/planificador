@@ -18,7 +18,7 @@ void disk_interrupt(int sig);
 
 
 /* Array of state thread control blocks: the process allows a maximum of N threads */
-static TCB t_state[N];
+static TCB t_state[N]; 
 
 /* Current running thread */
 static TCB* running;
@@ -32,7 +32,7 @@ static TCB idle;
 
 static void idle_function()
 {
-  while(1);//hay que rellenar
+  while(1);
 }
 
 void function_thread(int sec)
@@ -139,9 +139,6 @@ int mythread_create (void (*fun_addr)(),int priority,int seconds)
 } 
 /****** End my_thread_create() ******/
 
-//a rellenar todas estas funciones mozos
-//
-
 
 /* Read disk syscall */
 int read_disk()
@@ -185,6 +182,9 @@ void mythread_setpriority(int priority)
 {
   int tid = mythread_gettid();	
   t_state[tid].priority = priority;
+  if(priority ==  HIGH_PRIORITY){
+    t_state[tid].remaining_ticks = 195;
+  }
 }
 
 /* Returns the priority of the calling thread */
