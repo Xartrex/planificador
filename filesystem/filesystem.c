@@ -15,22 +15,54 @@
 #include "filesystem/auxiliary.h"  // Headers for auxiliary functions
 #include "filesystem/metadata.h"   // Type and structure declaration of the file system
 
+struct super_block superbloque;
+struct inode inodo[MAX_FN];
+struct inode_x inodox[MAX_FN];
+int mounted = 0;
+
 /*
  * @brief 	Generates the proper file system structure in a storage device, as designed by the student.
  * @return 	0 if success, -1 otherwise.
  */
 int mkFS(long deviceSize)
 {
-	return -1;
+	if (deviceSize < MIN_DS || deviceSize > MAX_DS){
+		return -1;
+	}
+	superbloque.magic_num = 12345;
+	superbloque.numBlocks = MAX_BI;
+
+	for(int i = 0; i < MAX_FN; i++){
+		superbloque.inode_map[i] = 0;
+	} 
+	for(int i = 0; i < superbloque.numBlocks; i++){
+		superbloque.block_map[i] = 0;
+	}
+	for(int i = 0; i< MAX_FN; i++){
+		memset(&(inodo[i]), 0, sizeof(inodo[i].type));
+	}
+
+	metadata_fromMemoryToDisk();
+
+	return 0;
 }
+
 
 /*
  * @brief 	Mounts a file system in the simulated device.
  * @return 	0 if success, -1 otherwise.
  */
-int mountFS(void)
+int mountFS(void)///////////////////////DUDA SI SOLO BREAD O METADATA
 {
-	return -1;
+	if(mounted == 1){
+		return -1;
+	}
+
+	metadata_fromDiskToMemory(); 
+
+	mounted = 1;
+
+	return 0;
 }
 
 /*
@@ -39,6 +71,16 @@ int mountFS(void)
  */
 int unmountFS(void)
 {
+	for(int i = 0; i < MAX_FN; i++){
+		if(inodox[i].open = 1){
+			return -1;
+		}
+	}
+
+	metadata_fromDiskToMemory(); 
+
+	mounted = 0;
+
 	return -1;
 }
 
@@ -46,18 +88,48 @@ int unmountFS(void)
  * @brief	Creates a new file, provided it it doesn't exist in the file system.
  * @return	0 if success, -1 if the file already exists, -2 in case of error.
  */
-int createFile(char *fileName)
+int createFile(char *fileName)////////////////////////////////FALTA -1
 {
-	return -2;
+	int b_id;
+	int inodo_id;
+	
+	inodo_id = ialloc();
+	if (inodo_id < 0){
+		return -2;
+	}
+
+	b_id = alloc();
+	if(b_id < 0 || b_id > 5){
+		ifree(inodo_id);
+		return -2;
+	}
+
+	inodo[inodo_id].type = 1;
+	strcpy(inodo[inodo_id].name, fileName);
+	inodos[inodo_id].numBlocks = b_id ;
+	inodox[inodo_id].position = 0;
+	inodox[inodo_id].open = 1;
+	return 0;
 }
 
 /*
  * @brief	Deletes a file, provided it exists in the file system.
  * @return	0 if success, -1 if the file does not exist, -2 in case of error..
  */
-int removeFile(char *fileName)
+int removeFile(char *fileName)//////////////////////////HAY QUE CONFIRMAR QUE SEA EL UNLINK Y COMPROBAR -1
 {
-	return -2;
+	int inodo_id;
+
+	inodo_id = namei(fileName);
+	if(inodo_id < 0){
+		return -2;
+	}
+
+	free(inodo[inodo_id].numBlocks);
+	memset(&(inodo[inodo_id]), 0, sizeof(inodo[inodo_id].type));
+	ifree(inodo_id);
+
+	return 0;
 }
 
 /*
@@ -66,7 +138,21 @@ int removeFile(char *fileName)
  */
 int openFile(char *fileName)
 {
-	return -2;
+	int inodo_id;
+ 	inodo_id = namei(fileName);
+
+ 	if (inodo_id < 0){
+		return -2;
+	}
+
+	if (inodo_id == NULL){//////////////////////////////////NO ESTAMOS SEGUROS DE QUE SEA ASI
+		return -1;
+	}
+ 	
+	inodox[inodo_id].position = 0;
+ 	inodox[inodo_id].open = 1;
+
+ 	return inodo_id; 
 }
 
 /*
@@ -75,7 +161,14 @@ int openFile(char *fileName)
  */
 int closeFile(int fileDescriptor)
 {
-	return -1;
+	if(fd < 0){
+		return -1;
+	}
+
+	inodox[fileDescriptor].position = 0;
+	inodox[fileDescriptor].open = 0;
+
+	return 0;
 }
 
 /*
@@ -84,9 +177,25 @@ int closeFile(int fileDescriptor)
  */
 int readFile(int fileDescriptor, void *buffer, int numBytes)
 {
-	return -1;
-}
+	char b[MAX_BS];
+	int b_id;
 
+	if(inodox[fileDescriptor].position + numBytes > inodo[fileDescriptor.size]){
+		numBytes = inodo[fileDescriptor].size - inodox[fileDescriptor].position;
+	}
+
+	if(numBytes <= 0){
+		return 0;
+	}
+
+	b_id = bmap(fileDescriptor, inodox[fileDescriptor].position);
+
+	//bread(DISK, superbloque.primerBloqueDatos+b_id, b);
+ 	memmove(buffer, b+inodox[fileDescriptor].position, numBytes);
+	inodox[fileDescriptor].position += numBytes;
+	return numBytes;
+}
+ 
 /*
  * @brief	Writes a number of bytes from a buffer and into a file.
  * @return	Number of bytes properly written, -1 in case of error.

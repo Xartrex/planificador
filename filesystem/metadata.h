@@ -51,7 +51,7 @@ typedef struct inode{ //llevamos bits: 264 + 8 + 16 + 32 + 8  = 328 bits
 	uint8_t type;	//El tipo de inodo, 0 fichero, 1 directorio
 	uint16_t size; //Tamaño del fichero en bytes asociado a este inodo
 	uint32_t CRC; //Variable para comprobar integridad
-	uint8_t num_blocks [MAX_BI]; //cantidad de bloques de datos que ocupa el fichero asociado a este inodo
+	uint8_t num_blocks; //cantidad de bloques de datos que ocupa el fichero asociado a este inodo
 	char padding [23]; // 512 - 328 = 184 / 8 = 23
 }; 
 
