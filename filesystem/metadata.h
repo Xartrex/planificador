@@ -36,8 +36,6 @@ struct super_block{ //ocupa 1 bloque, tenemos 2KB para rellenar
 	char inode_map [MAX_FN]; //mapa de inodos, 0 libre, 1 usado
 	char block_map [MAX_UB]; //mapa de bloques, 0 libre, 1 usado
 	uint8_t num_blocks; // tamaño de disco - 1(superbloque)
-	
-	struct inode arr_inodes [MAX_FN]; //array de inodos
 };
 
 typedef struct inode_x{

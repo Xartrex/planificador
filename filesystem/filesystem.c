@@ -19,6 +19,7 @@ struct super_block superbloque;
 struct inode inodo[MAX_FN];
 struct inode_x inodox[MAX_FN];
 int mounted = 0;
+char cwd[MAX_FN];
 
 /*
  * @brief 	Generates the proper file system structure in a storage device, as designed by the student.
@@ -52,7 +53,7 @@ int mkFS(long deviceSize)
  * @brief 	Mounts a file system in the simulated device.
  * @return 	0 if success, -1 otherwise.
  */
-int mountFS(void)///////////////////////DUDA SI SOLO BREAD O METADATA
+int mountFS(void)
 {
 	if(mounted == 1){
 		return -1;
@@ -77,7 +78,7 @@ int unmountFS(void)
 		}
 	}
 
-	metadata_fromDiskToMemory(); 
+	metadata_fromMemoryToDisk(); 
 
 	mounted = 0;
 
@@ -88,8 +89,21 @@ int unmountFS(void)
  * @brief	Creates a new file, provided it it doesn't exist in the file system.
  * @return	0 if success, -1 if the file already exists, -2 in case of error.
  */
-int createFile(char *fileName)////////////////////////////////FALTA -1
+int createFile(char *fileName)
 {
+	if (getcwd(cwd, sizeof(cwd)) == NULL) {
+		return -2
+	} 
+
+	Dir *d;
+	struct dirent *dir;
+	d=opendir(cwd);
+	while ((dir = readdir(d)) != NULL){
+		if (0== strcmp (dir->d_name, fileName)) {
+			return -1;
+		}
+	}
+
 	int b_id;
 	int inodo_id;
 	
@@ -116,8 +130,9 @@ int createFile(char *fileName)////////////////////////////////FALTA -1
  * @brief	Deletes a file, provided it exists in the file system.
  * @return	0 if success, -1 if the file does not exist, -2 in case of error..
  */
-int removeFile(char *fileName)//////////////////////////HAY QUE CONFIRMAR QUE SEA EL UNLINK Y COMPROBAR -1
+int removeFile(char *fileName)//////////////////////////HAY QUE CONFIRMAR QUE SEA EL UNLINK 
 {
+
 	int inodo_id;
 
 	inodo_id = namei(fileName);
@@ -175,7 +190,7 @@ int closeFile(int fileDescriptor)
  * @brief	Reads a number of bytes from a file and stores them in a buffer.
  * @return	Number of bytes properly read, -1 in case of error.
  */
-int readFile(int fileDescriptor, void *buffer, int numBytes)
+int readFile(int fileDescriptor, void *buffer, int numBytes)////////////////////////////////////////////////////////PRIMERBLOQUEDEDATOS
 {
 	char b[MAX_BS];
 	int b_id;
@@ -200,10 +215,27 @@ int readFile(int fileDescriptor, void *buffer, int numBytes)
  * @brief	Writes a number of bytes from a buffer and into a file.
  * @return	Number of bytes properly written, -1 in case of error.
  */
-int writeFile(int fileDescriptor, void *buffer, int numBytes)
+int writeFile(int fileDescriptor, void *buffer, int numBytes)////////////////////////////////////////////////////////PRIMERBLOQUEDEDATOS
 {
-	return -1;
-}
+	char b[MAX_BS];
+	int b_id;
+
+	if(inodox[fileDescriptor].position + numBytes > inodo[fileDescriptor.size]){
+		numBytes = inodo[fileDescriptor].size - inodox[fileDescriptor].position;
+	}
+
+	if(numBytes <= 0){
+		return 0;
+	}
+
+	b_id = bmap(fileDescriptor, inodox[fileDescriptor].position);
+
+	//bread(DISK, superbloque.primerBloqueDatos+b_id, b);
+ 	memmove(buffer, b+inodox[fileDescriptor].position, numBytes);
+	 //bwrite(DISK,superbloque.primerBloqueDatos+b_id,b);
+	inodox[fileDescriptor].position += numBytes;
+	inode[fileDescriptor].size = numBytes;
+	return numBytes;
 
 /*
  * @brief	Modifies the position of the seek pointer of a file.
