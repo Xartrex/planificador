@@ -15,7 +15,7 @@
 
 #ifndef _USER_H_
 #define _USER_H_
-
+  
 #include "filesystem/blocks_cache.h" // Headers for block managing (read/write)
 #include "filesystem/crc.h"
 

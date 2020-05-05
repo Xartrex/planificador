@@ -10,3 +10,11 @@
  *
  */
 
+int namei(char *fileName);
+void bfree(int bloque);
+void ifree(int inodo);
+int ialloc();
+void readMetadataFromDisk();
+void writeMetadaToDisk();
+int bmap(int fd, int pos);
+
