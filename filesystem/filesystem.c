@@ -370,45 +370,19 @@ int openFile(char *fileName) {
 		return -1; // file no existe
 	}
 	
-	//comprobamos si es un archivo o un enlace simbólico
-	if (inodos[inodo_id].type == TIPO_FILE){
-	
-		// comprobamos que no este abierto
-		if (inodox[inodo_id].open != 0){
-			//printf("File is already opened\n");
-			return -2;
-		}
-		
-		// abrimos fichero y reseteamos posicion
-		inodox[inodo_id].position = 0;
-		inodox[inodo_id].open = 1;
-
-		return inodo_id; 
+	// comprobamos que no este abierto
+	if (inodox[inodo_id].open != 0){
+		//printf("File is already opened\n");
+		return -2;
 	}
-
-	//si se trata de un enlace simbólico
-	//printf("Se trata de un enlace -> %s\n", inodos[inodo_id].name);
-
-	int aux = inodos[inodo_id].link;
-	//printf("Comprobaciones:\n1) Nombre del link: %s\n2) fd del link: %d\n3) fd del fichero: %d\n4) Nombre del fichero: %s\n",inodos[inodo_id].name, inodo_id, aux, inodos[aux].name);
-	if (inodos[aux].type == TIPO_FILE){
 	
-		// comprobamos que no este abierto
-		if (inodox[aux].open != 0){
-			//printf("File is already opened\n");
-			return -2;
-		}
-		
-		// abrimos fichero y reseteamos posicion
-		inodox[aux].position = 0;
-		inodox[aux].open = 1;
+	// abrimos fichero y reseteamos posicion
+	inodox[inodo_id].position = 0;
+	inodox[inodo_id].open = 1;
 
-		return aux; 
-	}
-	//el enlace simbólico apunta a otro enlace, no permitido por problemas de bucles, grafos circulares
-	//printf("El enlace simbólico apunta a otro enlace, no permitido por problemas de bucles, grafos circulares\n");
-	return -1;
+	return inodo_id; 
 }
+
 
 /*
  * @brief	Closes a file.
@@ -422,40 +396,21 @@ int closeFile(int fileDescriptor) {
 		return -1; // error, fd fuera de limites
 	}
 	
-	//comprobamos si es un fichero o un enlace simbólico
-	if (inodos[fileDescriptor].type == TIPO_FILE){
 
-		// comprobamos que no estuviese ya cerrado o que no este abierto con integridad
-		if (inodox[fileDescriptor].open != 1){
-			//printf("File is already closed\n");
-			return -1; // error, ya estaba cerrado o estaba abierto con integridad
-		} // files abiertos con integridad deben cerrarse con closeFileIntegrity() 
-		
-		inodox[fileDescriptor].position = 0;
-		inodox[fileDescriptor].open = 0; // cerramos file
-
-		return 0; // ok
-	}
-
-	//el fd era de un enlace simbólico
-	//printf("El fd era de un enlace simbólico\n");
+	// comprobamos que no estuviese ya cerrado o que no este abierto con integridad
+	if (inodox[fileDescriptor].open != 1){
+		//printf("File is already closed\n");
+		return -1; // error, ya estaba cerrado o estaba abierto con integridad
+	} // files abiertos con integridad deben cerrarse con closeFileIntegrity() 
 	
-	int aux = inodos[fileDescriptor].link;
-	
-	//comprobamos que no apunte a otro enlace simbólico
-	if(inodos[aux].type == TIPO_FILE){
-		if(inodox[aux].open != 1){  //si esta cerrado, error
-			//printf("File is already closed\n");
-			return -1; // error, ya estaba cerrado o estaba abierto con integridad
-		}
-		
-		inodox[aux].position = 0;
-		inodox[aux].open = 0; // cerramos file
-	}
-	//printf("El enlace apunta a otro enlace, acción no permitida\n");
-	return -1;
+	inodox[fileDescriptor].position = 0;
+	inodox[fileDescriptor].open = 0; // cerramos file
 
+	return 0; // ok
 }
+
+
+
 
 /*
  * @brief	Reads a number of bytes from a file and stores them in a buffer.
