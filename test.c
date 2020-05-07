@@ -30,7 +30,6 @@ int main()
 {
 	int ret;
 	int fd;
-
 	char tooLong[33] = "/qwertyuiopasdfghjklzxcvbnmqwerty";
 	char fine[33] = "/qwertyuiopasdfghjklzxcvbnmqwert";
 
@@ -93,172 +92,193 @@ int main()
 	}
 	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 6 createFile nombre demasiado grande", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
+	//Prueba 7: crear archivo de 0 caracteres ///////////////////////////////////////////////////////////////////////////
+	ret = createFile("");
+	if (ret == 0){
 
-	//Prueba 7: crear archivo de 32 caracteres ///////////////////////////////////////////////////////////////////////////
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 7 createFile nombre demasiado grande", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 7 createFile nombre demasiado grande", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+
+	//Prueba 8: crear archivo de 32 caracteres ///////////////////////////////////////////////////////////////////////////
 	ret = createFile(fine);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 7 createFile nombre máximo", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 8 createFile nombre máximo", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 7 createFile nombre máximo", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 8 createFile nombre máximo", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
-	//Prueba 8: cerrar archivo ///////////////////////////////////////////////////////////////////////////
+	//Prueba 9: cerrar archivo un archivo que ya esta cerrado////////////////////////////////////////////////////////////////////
 	ret = closeFile(ret);
-	if (ret != 0){
+	if (ret == 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 8 closeFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 9 closeFile de archivo ya cerrado", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 8 closeFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 9 closeFile de archivo ya cerrado", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 	
 	
 	
-	//Prueba 9: abrir archivo ///////////////////////////////////////////////////////////////////////////
+	//Prueba 10: abrir archivo ///////////////////////////////////////////////////////////////////////////
 	ret = openFile(fine);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 9 openFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 10 openFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 9 openFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 10 openFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
-	//Prueba 10: escribir en archivo ///////////////////////////////////////////////////////////////////////////
+	//Prueba 11: escribir en archivo ///////////////////////////////////////////////////////////////////////////
 	fd = ret;
 	char buffer[MAX_NL] = "hey motherfucker";
 	ret = writeFile(ret, buffer, strlen(buffer));
 	if (ret <= 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 10 writeFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 11 writeFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 10 writeFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 11 writeFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
-	//Prueba 11: cerrar archivo después de haberlo escrito///////////////////////////////////////////////////////////////////////////
+	//Prueba 12: cerrar archivo después de haberlo escrito///////////////////////////////////////////////////////////////////////////
 	ret = closeFile(fd);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 11 closeFile after writing", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 12 closeFile after writing", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 11 closeFile writing", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 12 closeFile writing", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 	
 
 
-	//Prueba 12: incluir integridad en archivo ///////////////////////////////////////////////////////////////////////////
+	//Prueba 13: incluir integridad en archivo ///////////////////////////////////////////////////////////////////////////
 	ret = includeIntegrity(fine);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 12 includeIntegrity", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 13 includeIntegrity", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 12 includeIntegrity", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 13 includeIntegrity", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 	
 	
 
-	//Prueba 13: comprobar integridad de archivo ///////////////////////////////////////////////////////////////////////////
+	//Prueba 14: comprobar integridad de archivo ///////////////////////////////////////////////////////////////////////////
 	ret = checkFile(fine);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 13 checkFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 14 checkFile", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 13 checkFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 14 checkFile", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
-	//Prueba 14: abrir archivo con integridad  ///////////////////////////////////////////////////////////////////////////
+	//Prueba 15: abrir archivo con integridad  ///////////////////////////////////////////////////////////////////////////
 	ret = openFileIntegrity(fine);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 14 openFileIntegrity", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 15 openFileIntegrity", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 14 openFileIntegrity", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 15 openFileIntegrity", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
 
-	//Prueba 15: cerrar archivo con integridad  ///////////////////////////////////////////////////////////////////////////
+	//Prueba 16: cerrar archivo con integridad  ///////////////////////////////////////////////////////////////////////////
 	ret = closeFileIntegrity(ret);
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 15 closeFileIntegrity", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 16 closeFileIntegrity", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST  15 closeFileIntegrity", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 18 closeFileIntegrity", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
-	//Prueba 16: crear enlace simbólico  ///////////////////////////////////////////////////////////////////////////
+	//Prueba 17: crear enlace simbólico  ///////////////////////////////////////////////////////////////////////////
 	ret = createLn(fine, "linkk");
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 16 createLn", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 17 createLn", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 16 createLn", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 17 createLn", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
-	//Prueba 17: abrir enlace simbólico ///////////////////////////////////////////////////////////////////////////
+	//Prueba 18: abrir enlace simbólico ///////////////////////////////////////////////////////////////////////////
 	ret = openFile("linkk");
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 17 abrir enlace simbólico", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 18 abrir enlace simbólico", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 17 abrir enlace simbólico", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 18 abrir enlace simbólico", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 	
 	
-	//Prueba 18: umount disk cuando hay archivos abiertos  ///////////////////////////////////////////////////////////////////////////
+	//Prueba 19: umount disk cuando hay archivos abiertos  ///////////////////////////////////////////////////////////////////////////
 	ret = unmountFS();
 	if (ret == 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 18 unmountFS con archivos abiertos", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 19 unmountFS con archivos abiertos", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 18 unmountFS con archivos abiertos", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 19 unmountFS con archivos abiertos", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 	
 
 
+	//Prueba 20: cerrar archivo por enlace simbólico///////////////////////////////////////////////////////////////////////////
+	ret = closeFile(1);
+	if (ret != 0){//si no consigue cerrar el archivo
 
-	int aux = namei("linkk");
-	//Prueba 19: cerrar archivo por enlace simbólico///////////////////////////////////////////////////////////////////////////
-	ret = closeFile(aux);
-	if (ret != 0){
-
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 19 closeFile mediante enlace simbólico", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 20 closeFile mediante enlace simbólico", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 19 closeFile mediante enlace simbólico", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	ret = closeFile(0);
+	if(ret == 0){//si en este paso puede cerra el archivo, error
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 20 closeFile mediante enlace simbólico", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 20 closeFile mediante enlace simbólico", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+
+
+	//Prueba 21: crear enlace simbólico a enlace simbolico///////////////////////////////////////////////////////////////////////
+	ret = createLn("linkk", "linkkm");
+	if (ret == 0){//si lo crea, error, nuestro diseño no lo permite
+
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 21 createLn to link", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 21 createLn to link", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
-	//Prueba 20: eliminar enlace simbólico  ///////////////////////////////////////////////////////////////////////////
+	//Prueba 22: eliminar enlace simbólico  ///////////////////////////////////////////////////////////////////////////
 	ret = removeLn("linkk");
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 20 removeLn", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 22 removeLn", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 20 removeLn", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 22 removeLn", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 
-	//Prueba 21: umount disk ///////////////////////////////////////////////////////////////////////////
+	//Prueba 23: umount disk ///////////////////////////////////////////////////////////////////////////
 	ret = unmountFS();
 	if (ret != 0){
 
-		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 21 unmountFS", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 23 unmountFS", ANSI_COLOR_RED, " FAILED\n", ANSI_COLOR_RESET);
 		return -1;
 	}
-	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 21 unmountFS", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST 23 unmountFS", ANSI_COLOR_GREEN, " SUCCESS\n", ANSI_COLOR_RESET);
 
 
 	

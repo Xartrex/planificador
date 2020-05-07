@@ -269,8 +269,8 @@ int createFile(char *fileName) {
 	int inodo_id;	//inodo asociado al fichero
 	
 	//comprobamos que el nombre del archivo tenga máximo 32 caracteres más el char 0 al final, en total 33B
-	if(strlen(fileName) > 32){
-		//printf("File's name must have 33B maximum including char 0 at the end\n");
+	if(strlen(fileName) > 32 || strlen(fileName) < 1){
+		//printf("File's name must have 33B maximum including char 0 at the end, and 1 char at minimum\n");
 		//printf("Size of name: %ld\nLenght of name:%ld\n", sizeof(fileName), strlen(fileName));
 		return -1;
 	}
@@ -307,7 +307,7 @@ int createFile(char *fileName) {
 
 	// rellenamos valores del inodox
 	inodox[inodo_id].position = 0; // posicion inicial
-	inodox[inodo_id].open = 1; // marcamos file como abierto ?? DUDA preguntar
+	//inodox[inodo_id].open = 1; // marcamos file como abierto ?? DUDA preguntar -> NO, se queda cerrado
 
 	return 0; // ok
 }
@@ -395,16 +395,24 @@ int closeFile(int fileDescriptor) {
 		//printf("Wrong file descriptor\n");
 		return -1; // error, fd fuera de limites
 	}
-	
+
+	//comprobamos si es un enlace, para que en tal caso, nos devuelva el descriptor del archivo
+	int inodo_id = namei(inodos[fileDescriptor].name);
+
+	// comprobamos file descriptor correcto
+	if(fileDescriptor < 0 || fileDescriptor > MAX_FN){
+		//printf("Wrong file descriptor\n");
+		return -1; // error, fd fuera de limites
+	}
 
 	// comprobamos que no estuviese ya cerrado o que no este abierto con integridad
-	if (inodox[fileDescriptor].open != 1){
+	if (inodox[inodo_id].open != 1){
 		//printf("File is already closed\n");
 		return -1; // error, ya estaba cerrado o estaba abierto con integridad
 	} // files abiertos con integridad deben cerrarse con closeFileIntegrity() 
 	
-	inodox[fileDescriptor].position = 0;
-	inodox[fileDescriptor].open = 0; // cerramos file
+	inodox[inodo_id].position = 0;
+	inodox[inodo_id].open = 0; // cerramos file
 
 	return 0; // ok
 }
@@ -707,7 +715,7 @@ int includeIntegrity (char * fileName) {
 int openFileIntegrity(char *fileName) {
 	
 	// comprobamos que el file exista
-    int fd = namei(fileName);
+	int fd = namei(fileName);
 	if (fd == -1) {
 		// printf("File does not exist\n");
 		return -1; // error, no existe el file
@@ -783,7 +791,13 @@ int createLn(char *fileName, char *linkName) {
 	}
 
 	// comprobamos que es de tipo file
-	if (inodos[fd].type != TIPO_FILE){
+	for (int i = 0; i < MAX_FN; i++){
+		if(0 == strcmp(fileName, inodos[i].name)){
+			inodo_id = i;
+		}
+	}
+
+	if (inodos[inodo_id].type != TIPO_FILE){
 		//printf("%s is a link, not a file\n" , fileName);
 		return -2;
 	}
@@ -800,7 +814,7 @@ int createLn(char *fileName, char *linkName) {
 		//printf("Not possible. Max number of files already reached\n");
 		return -2;
 	}
-
+	//printf("fd of link: %d\n", inodo_id);
 	// rellenamos el nuevo inodo
 	inodos[inodo_id].type = TIPO_LINK; // tipo 2 link
 	strcpy(inodos[inodo_id].name, linkName); //escribimos el nombre del link
@@ -808,13 +822,11 @@ int createLn(char *fileName, char *linkName) {
 	inodos[inodo_id].size = 0;
 	inodos[inodo_id].CRC = 0; // 0 -> no CRC info
 	inodos[inodo_id].link = fd; // enlazado a fd
-	//int aux = inodos[inodo_id].link;
-	//printf("Comprobaciones\n1) Fichero asociado a link: %s\n2) fd del link: %d\n3) fd del fichero: %d\n4) Nombre del link: %s\n", inodos[aux].name, inodo_id, fd, inodos[inodo_id].name);
 	inodox[inodo_id].position = 0;
-	inodox[inodo_id].open = 0;
+	//inodox[inodo_id].open = 0; -> No, se queda cerrado
 	
 	// aumentamos el numero de enlaces del file
-	//inodos[inodo_id].link++;////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	inodos[fd].link++; 
 
 	return 0; // ok
 }
