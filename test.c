@@ -235,6 +235,8 @@ int main()
 
 
 	//Prueba 20: cerrar archivo por enlace simbólico///////////////////////////////////////////////////////////////////////////
+	//fd = 1 -> enlace
+	//fd = 0 -> archivo
 	ret = closeFile(1);
 	if (ret != 0){//si no consigue cerrar el archivo
 
