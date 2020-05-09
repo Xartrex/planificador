@@ -183,7 +183,7 @@ int bmap(int fd, int pos) {
 int mkFS(long deviceSize) {
 
 	if (deviceSize < MIN_DS || deviceSize > MAX_DS){
-		// printf("Disk size %ldKB not valid (460KB - 600KB)\n", deviceSize / 1024); // añadido
+		//printf("Disk size %ldKB not valid (460KB - 600KB)\n", deviceSize / 1024); // añadido
 		return -1; // error, tamaño de disco fuera de especificaiones 
 	}
 
@@ -366,13 +366,13 @@ int openFile(char *fileName) {
 	// buscamos el fd del file y comprobamos si existe
  	inodo_id = namei(fileName);
  	if (inodo_id < 0){
-		//printf("File does not exist\n");
+		printf("File does not exist\n");
 		return -1; // file no existe
 	}
 	
 	// comprobamos que no este abierto
 	if (inodox[inodo_id].open != 0){
-		//printf("File is already opened\n");
+		printf("File is already opened\n");
 		return -2;
 	}
 	

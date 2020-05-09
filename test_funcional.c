@@ -65,6 +65,15 @@ int main()
 	//char *linea = "Esto es una linea de prueba para rellenar ficheros.\n";
 	//strcpy(buffer, linea);
 	for (int i = 0; i < MAX_FILE_SIZE; i++) buffer[i] = 'x'; //strcat(buffer, linea);
+	
+	ret = openFile("/test.txt");
+	if (ret < 0)
+	{
+		fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST openFile ", ANSI_COLOR_RED, "FAILED\n", ANSI_COLOR_RESET);
+		return -1;
+	}
+	fprintf(stdout, "%s%s%s%s%s", ANSI_COLOR_BLUE, "TEST openFile ", ANSI_COLOR_GREEN, "SUCCESS\n", ANSI_COLOR_RESET);
+
 	ret = writeFile(fd, buffer, strlen(buffer));
 	if (ret < 0)
 	{
