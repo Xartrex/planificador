@@ -303,7 +303,7 @@ int createFile(char *fileName) {
 	for(int i=1; i < 5;i++) inodos[inodo_id].num_block[i] = -2; // -2 -> (bloques no asignados)
 	inodos[inodo_id].size = 0; // tamaño inicial 0
 	inodos[inodo_id].CRC = 0; // 0 -> no CRC info
-	inodos[inodo_id].link = -1 ; // -1 -> no enlazado
+	inodos[inodo_id].link = 0 ; // 0 -> no enlazado
 
 	// rellenamos valores del inodox
 	inodox[inodo_id].position = 0; // posicion inicial
@@ -366,13 +366,13 @@ int openFile(char *fileName) {
 	// buscamos el fd del file y comprobamos si existe
  	inodo_id = namei(fileName);
  	if (inodo_id < 0){
-		printf("File does not exist\n");
+		//printf("File does not exist\n");
 		return -1; // file no existe
 	}
 	
 	// comprobamos que no este abierto
 	if (inodox[inodo_id].open != 0){
-		printf("File is already opened\n");
+		//printf("File is already opened\n");
 		return -2;
 	}
 	
